@@ -1,102 +1,43 @@
 let myGeoPoints = [
     {
         type: 'myPoint',
-        geoposition: [41.365238, 69.286795]
+        geoposition: [55.75580, 37.6172]
     },
-    {
-        type: 'myPoint',
-        geoposition: [41.365138, 69.286895]
-    },
-    {
-        type: 'myPoint',
-        geoposition: [41.364038, 69.286995]
-    },
-    {
-        type: 'myPoint',
-        geoposition: [41.364538, 69.286895]
-    },
-    {
-        type: 'myPoint',
-        geoposition: [41.364238, 69.287595]
-    },
-    {
-        type: 'myPoint',
-        geoposition: [41.367638, 69.285795]
-    },
+    // {
+    //     type: 'myPoint',
+    //     geoposition: [41.365138, 69.286895]
+    // },
+    // {
+    //     type: 'myPoint',
+    //     geoposition: [41.364038, 69.286995]
+    // },
+    // {
+    //     type: 'myPoint',
+    //     geoposition: [41.364538, 69.286895]
+    // },
+    // {
+    //     type: 'myPoint',
+    //     geoposition: [41.364238, 69.287595]
+    // },
+    // {
+    //     type: 'myPoint',
+    //     geoposition: [41.367638, 69.285795]
+    // },
 ]
 
+function getMyGeoposition(){
+    let coordinates = ymaps.geolocation.get().then(function(result) {
+        return result.geoObjects.position;
+        
+    });
+    return coordinates
+}
 
 // Функция ymaps.ready() будет вызвана, когда
 // загрузятся все компоненты API, а также когда будет готово DOM-дерево.
 ymaps.ready(init);
 function init(){
-
-    // let coordinates;
-    // ymaps.geolocation.get().then(function(result) {
-    //     coordinates = result.geoObjects.position;
-    //     console.log("Широта: " + coordinates[0]);
-    //     console.log("Долгота: " + coordinates[1]);
-    //     var myPlacemark = new ymaps.Placemark([coordinates[0], coordinates[1]], {
-    //         iconContent: 'Ты тут'
-    //     }, {
-    //         // Иконка будет зеленой и
-    //         // растянется под iconContent.
-    //         preset: 'islands#greenStretchyIcon'
-    //     });
-    //     myMap.geoObjects.add(myPlacemark)
-    //     myMap.setCenter(coordinates)
-    // });
-
-    var inputSearch = new ymaps.control.SearchControl({
-        options: {
-            // Пусть элемент управления будет
-            // в виде поисковой строки.
-            size: 'large',
-            // Включим возможность искать
-            // не только топонимы, но и организации.
-            provider: 'yandex#search',
-            results: 500            
-        }
-    })
-
-    
-    // Создание карты.
-    let myMap = new ymaps.Map("map", {
-        // Координаты центра карты.
-        // Порядок по умолчанию: «широта, долгота».
-        // Чтобы не определять координаты центра карты вручную,
-        // воспользуйтесь инструментом Определение координат.
-        center: [41.364238, 69.286995],
-        controls:[],
-        // Уровень масштабирования. Допустимые значения:
-        // от 0 (весь мир) до 19.
-        zoom: 15
-    });
-
-
-    myMap.events.add('boundschange', function(event) { // дает результаты поиска только по видимомоу участку
-        // Получаем новые границы карты
-        var newBounds = event.get('newBounds');
-    
-        // Обновляем boundedBy у SearchControl с новыми границами карты
-        inputSearch.options.set('boundedBy', newBounds);
-    });
-
-    let myBtn = document.getElementById('box__btn');
-    let myInput = document.getElementById('box__input');
-    let suggestView1 = new ymaps.SuggestView('box__input'); // Подсказки к инпуту
-    let objectManagerForYandex = new ymaps.ObjectManager({
-        clusterize: true,
-        hasBalloon: true,
-    });
-    let objectManagerForAvito = new ymaps.ObjectManager({
-        clusterize: true,
-        hasBalloon: true,
-    });
-    myMap.geoObjects.add(objectManagerForYandex);
-    myMap.geoObjects.add(objectManagerForAvito);
-
-    myBtn.addEventListener('click', function(){
+    function searchAndShowPlacemark(){
 
         inputSearch.search(myInput.value).then(function () {
             objectManagerForYandex.removeAll();
@@ -109,7 +50,7 @@ function init(){
                 console.log(geoObjectsArray[0].properties.get('name'));
                 
             }
-
+    
             
         
             let objectsYandex = []; 
@@ -187,9 +128,66 @@ function init(){
             
                 
             });
+    
+    }
+    
 
+    let inputSearch = new ymaps.control.SearchControl({
+        options: {
+            // Пусть элемент управления будет
+            // в виде поисковой строки.
+            size: 'large',
+            // Включим возможность искать
+            // не только топонимы, но и организации.
+            provider: 'yandex#search',
+            results: 1000000            
+        }
     })
 
+    
+    // Создание карты.
+    let myMap = new ymaps.Map("map", {
+        // Координаты центра карты.
+        // Порядок по умолчанию: «широта, долгота».
+        // Чтобы не определять координаты центра карты вручную,
+        // воспользуйтесь инструментом Определение координат.
+        center: [55.75583, 37.6173],
+        controls:[],
+        // Уровень масштабирования. Допустимые значения:
+        // от 0 (весь мир) до 19.
+        zoom: 15
+    });
+
+    //myMap.setCenter([41.364239, 69.286996])
+    myMap.events.add('boundschange', function(event) { // дает результаты поиска только по видимомоу участку
+        // Получаем новые границы карты
+        var newBounds = event.get('newBounds');
+    
+        // Обновляем boundedBy у SearchControl с новыми границами карты
+        inputSearch.options.set('boundedBy', newBounds);
+    });
+
+    let myBtn = document.getElementById('box__btn');
+    let myInput = document.getElementById('box__input');
+    let suggestView1 = new ymaps.SuggestView('box__input'); // Подсказки к инпуту
+    let objectManagerForYandex = new ymaps.ObjectManager({
+        clusterize: true,
+        hasBalloon: true,
+    });
+    let objectManagerForAvito = new ymaps.ObjectManager({
+        clusterize: true,
+        hasBalloon: true,
+    });
+    myMap.geoObjects.add(objectManagerForYandex);
+    myMap.geoObjects.add(objectManagerForAvito);
+
+    myBtn.addEventListener('click', searchAndShowPlacemark)
+    myInput.addEventListener("keypress", function(event) {       
+        if (event.key === "Enter") {        
+            event.preventDefault();       
+            searchAndShowPlacemark();
+        }
+      });
     
     // inputSearch.events.add('submit', function(event) {                        //Запасной вариант
     //     var searchQuery = event.get('target').getRequestString()
@@ -212,4 +210,9 @@ function init(){
         //     myMap.geoObjects.add(placemark)
         // }
     
+    setTimeout(async ()=>{
+        let coordinates = await getMyGeoposition();
+        myMap.setCenter(coordinates);
+        console.log(coordinates);
+    }, 100)
 }
